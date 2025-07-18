@@ -1,0 +1,50 @@
+{
+  "jumbo_chile": {
+    "scraper_config": {
+      "name": "Jumbo_Chile_Products",
+      "website_url": "https://www.jumbo.cl/papel-higienico-elite-ultra-doble-hoja-18-rollos-50-m-c-u/p",
+      "schema": {
+        "name": { "type": "str", "description": "Product name" },
+        "customer_price_lc": { "type": "float", "description": "current price in local currency" },
+        "base_price_lc": { "type": "float", "description": "base price in local currency" },
+        "discount_percentage": { "type": "float", "description": "discount percentage of the product" },
+        "availability": { "type": "boolean", "description": "Product availability status" },
+        "image_url": { "type": "str", "description": "URL of the product image" },
+        "brand": { "type": "str", "description": "Brand of the product" },
+        "sku": { "type": "str", "description": "SKU of the product" },
+        "crawled_timestamp": { "type": "timestamp", "description": "Timestamp of when the data was crawled" },
+        "category": { "type": "str", "description": "Product category" }
+      }
+    }
+  },
+  "czech_tesco": {
+    "scraper_config": {
+      "name": "Czech_Tesco_Products", 
+      "website_url": "https://nakup.itesco.cz/groceries/cs-CZ/products/215351291",
+      "schema": {
+        "name": { "type": "str", "description": "Product name" },
+        "customer_price_lc": { "type": "float", "description": "current price in Czech Koruna" },
+        "base_price_lc": { "type": "float", "description": "base price in Czech Koruna" },
+        "discount_percentage": { "type": "float", "description": "discount percentage" },
+        "brand": { "type": "str", "description": "Brand name" },
+        "sku": { "type": "str", "description": "Product ID" },
+        "crawled_timestamp": { "type": "timestamp", "description": "Crawl timestamp" }
+      }
+    }
+  },
+  "amazon_basic": {
+    "scraper_config": {
+      "name": "Amazon_Product_Extractor",
+      "website_url": "https://www.amazon.com/dp/EXAMPLE",
+      "schema": {
+        "name": { "type": "str", "description": "Product title" },
+        "customer_price_lc": { "type": "float", "description": "Price in USD" },
+        "brand": { "type": "str", "description": "Brand name" },
+        "rating": { "type": "float", "description": "Customer rating" },
+        "reviews_count": { "type": "str", "description": "Number of reviews" },
+        "availability": { "type": "boolean", "description": "In stock status" },
+        "crawled_timestamp": { "type": "timestamp", "description": "Extraction time" }
+      }
+    }
+  }
+} 

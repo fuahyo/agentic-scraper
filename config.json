@@ -1,0 +1,48 @@
+{
+  "scraper_config": {
+    "name": "disco",
+    "website_url": "https://www.disco.com.ar/repuesto-de-aromatizador-automatico-lavanda-vainilla-175-cc-glade/p",
+    "schema": {
+      "name": {
+        "type": "str",
+        "description": "Product name"
+      },
+      "customer_price_lc": {
+        "type": "float",
+        "description": "current price in local currency"
+      },
+      "base_price_lc": {
+        "type": "float",
+        "description": "base price in local currency"
+      },
+      "discount_percentage": {
+        "type": "float",
+        "description": "discount percentage of the product"
+      },
+      "availability": {
+        "type": "boolean",
+        "description": "Product availability status"
+      },
+      "image_url": {
+        "type": "str",
+        "description": "URL of the product image"
+      },
+      "brand": {
+        "type": "str",
+        "description": "Brand of the product"
+      },
+      "sku": {
+        "type": "str",
+        "description": "SKU of the product"
+      },
+      "crawled_timestamp": {
+        "type": "timestamp",
+        "description": "Timestamp of when the data was crawled"
+      },
+      "category": {
+        "type": "str",
+        "description": "Product category"
+      }
+    }
+  }
+} 

@@ -1,0 +1,21 @@
+{
+  "name": "product-extractor",
+  "version": "1.0.0",
+  "description": "Intelligent product data extractor using Playwright with schema-driven extraction",
+  "main": "dynamic-extractor.ts",
+  "scripts": {
+    "extract": "npx ts-node dynamic-extractor.ts",
+    "extract:url": "npx ts-node dynamic-extractor.ts"
+  },
+  "keywords": ["web-scraping", "playwright", "product-extraction", "schema-driven"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.54.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0",
+    "@types/node": "^20.0.0"
+  }
+}

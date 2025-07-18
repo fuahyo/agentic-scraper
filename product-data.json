@@ -1,0 +1,55 @@
+{
+  "crawled_timestamp": "2025-07-17T18:11:40.464Z",
+  "url": "https://www.disco.com.ar/repuesto-de-aromatizador-automatico-lavanda-vainilla-175-cc-glade/p",
+  "selectors": {
+    "crawled_timestamp": {
+      "method": "Generated",
+      "selector": "new Date().toISOString()"
+    },
+    "name": {
+      "method": "CSS",
+      "selector": "h1"
+    },
+    "brand": {
+      "method": "CSS",
+      "selector": "[class*=\"brand\"]"
+    },
+    "base_price_lc": {
+      "method": "Regex Pattern",
+      "selector": "(\\$[\\d,]+\\.?\\d*)",
+      "description": "USD prices"
+    },
+    "discount_percentage": {
+      "method": "Regex Pattern",
+      "selector": "(\\d+%\\s*off)",
+      "description": "English discount"
+    },
+    "availability": {
+      "method": "Regex Pattern",
+      "selector": "(In Stock|Available|Disponible)",
+      "description": "Available"
+    },
+    "sku": {
+      "method": "Regex Pattern",
+      "selector": "SKU:\\s*([A-Z0-9]+)",
+      "description": "SKU pattern"
+    },
+    "customer_price_lc": {
+      "method": "Regex Pattern",
+      "selector": "(\\$[\\d,]+\\.?\\d*)",
+      "description": "USD prices"
+    },
+    "image_url": {
+      "method": "HTML Attribute",
+      "selector": "[src]"
+    }
+  },
+  "name": "Repuesto De Aromatizador Automatico Lavanda Vainilla 175 Cc Glade",
+  "brand": "Desodorante Ambiente Toque Mañana Campo Rep 9 Gr Glade",
+  "base_price_lc": 75,
+  "discount_percentage": 35,
+  "availability": true,
+  "sku": "14340101155espacio",
+  "customer_price_lc": 3.099,
+  "image_url": "https://www.googletagmanager.com/gtag/destination?id=DC-4191744&cx=c&gtm=45He57g0v844811382za200&tag_exp=101509157~103116026~103200004~103233427~103351869~103351871~104684208~104684211~104732253~104732255~104908321~104908323~104964065~104964067~104967141~104967143"
+}
