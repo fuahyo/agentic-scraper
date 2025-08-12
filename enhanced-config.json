@@ -1,0 +1,100 @@
+{
+  "scraper_config": {
+    "name": "Jumbo",
+    "website_url": "https://www.jumbo.cl/aceite-de-oliva-la-espanola-200-ml-extra-virgen-spray/p",
+    "schema": {
+      "name": {
+        "type": "str",
+        "description": "Product name"
+      },
+      "customer_price_lc": {
+        "type": "float",
+        "description": "current price in local currency"
+      },
+      "base_price_lc": {
+        "type": "float",
+        "description": "base price in local currency"
+      },
+      "discount_percentage": {
+        "type": "float",
+        "description": "discount percentage of the product"
+      },
+      "availability": {
+        "type": "boolean",
+        "description": "Product availability status"
+      },
+      "image_url": {
+        "type": "str",
+        "description": "URL of the product image"
+      },
+      "brand": {
+        "type": "str",
+        "description": "Brand of the product"
+      },
+      "sku": {
+        "type": "str",
+        "description": "SKU of the product"
+      },
+      "crawled_timestamp": {
+        "type": "timestamp",
+        "description": "Timestamp of when the data was crawled"
+      },
+      "category": {
+        "type": "str",
+        "description": "Product category"
+      }
+    }
+  },
+  "data_extraction": {
+    "selector_mappings": {
+      "name": {
+        "selector": ".product-name",
+        "method": "CSS",
+        "description": "name CSS selector"
+      },
+      "customer_price_lc": {
+        "selector": ".flex",
+        "method": "CSS",
+        "description": "customer_price_lc CSS selector"
+      },
+      "base_price_lc": {
+        "selector": ".text-3xl",
+        "method": "CSS",
+        "description": "base_price_lc CSS selector"
+      },
+      "discount_percentage": {
+        "selector": ".text-sm.rounded-full.bg-grey.px-3.font-normal.text-black.mb-4",
+        "method": "CSS",
+        "description": "discount_percentage CSS selector"
+      },
+      "availability": {
+        "selector": ".mr-auto",
+        "method": "CSS",
+        "description": "availability CSS selector"
+      },
+      "image_url": {
+        "selector": "img",
+        "method": "CSS",
+        "description": "image_url CSS selector"
+      },
+      "brand": {
+        "selector": ".product-brand",
+        "method": "CSS",
+        "description": "brand CSS selector"
+      },
+      "sku": {
+        "selector": ".product-code",
+        "method": "CSS",
+        "description": "sku CSS selector"
+      },
+      "category": {
+        "selector": "a",
+        "method": "CSS",
+        "description": "category CSS selector"
+      }
+    },
+    "extraction_strategy": "CSS_SELECTORS",
+    "created_at": "2025-07-31T16:59:02.809Z",
+    "total_fields": 9
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "crawled_timestamp": "2025-07-24T15:54:49.121Z",
+  "url": "https://plazalama.com.do/p/agua-purificada-dasani-591ml-49000409772",
+  "selectors_used": {
+    "name": "h1",
+    "customer_price_lc": "[class*=\"price\"]",
+    "base_price_lc": "span",
+    "sku": "[class*=\"id\"]",
+    "category": "[class*=\"category\"]"
+  },
+  "name": "Descripción",
+  "customer_price_lc": 25205,
+  "base_price_lc": 120,
+  "sku": "Categorias¡Hola! Inicia sesiónMi cuentaCarritoCómo te gustaría recibir tu pedidoAtención al cliente",
+  "category": "Categorias"
+}

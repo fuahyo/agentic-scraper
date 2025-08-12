@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic Scraper - AI-Powered Selector Finder</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .selector-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .selector-code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .confidence-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .confidence-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .confidence-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .examples {
+            background: #e3f2fd;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .examples h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        .example-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 3px solid #1976d2;
+        }
+
+        .example-url {
+            font-weight: 600;
+            color: #1976d2;
+        }
+
+        .example-target {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- <div class="header">
+            <h1><i class="fas fa-robot"></i> Agentic Scraper</h1>
+            <p>AI-Powered CSS Selector Finder for Web Scraping</p>
+        </div> -->
+
+        <div class="main-card">
+            <form id="selectorForm">
+                <div class="form-group">
+                    <label for="url">
+                        <i class="fas fa-link"></i> Website URL
+                    </label>
+                    <input 
+                        type="url" 
+                        id="url" 
+                        name="url" 
+                        placeholder="https://example.com"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="targetInfo">
+                        <i class="fas fa-search"></i> What information are you looking for?
+                    </label>
+                    <textarea 
+                        id="targetInfo" 
+                        name="targetInfo" 
+                        placeholder="Describe the information you want to extract. For example: 'product price', 'article title', 'contact email', 'product images', etc."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="options">
+                        <i class="fas fa-cog"></i> Additional Options (Optional)
+                    </label>
+                    <input 
+                        type="text" 
+                        id="options" 
+                        name="options" 
+                        placeholder="waitForSelector: '.dynamic-content' (for pages with dynamic content)"
+                    >
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-magic"></i> Find Selectors
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>AI is analyzing the webpage and finding the best selectors...</p>
+            </div>
+        </div>
+
+        <div class="results" id="results"></div>
+
+        <div class="examples">
+            <h3><i class="fas fa-lightbulb"></i> Example Use Cases</h3>
+            
+            <div class="example-item">
+                <div class="example-url">https://amazon.com/product-page</div>
+                <div class="example-target">product price, product title, product images</div>
+            </div>
+            
+            <div class="example-item">
+                <div class="example-url">https://news-website.com/article</div>
+                <div class="example-target">article title, article content, publication date</div>
+            </div>
+            
+            <div class="example-item">
+                <div class="example-url">https://ecommerce-site.com/category</div>
+                <div class="example-target">product names, prices, ratings, "add to cart" buttons</div>
+            </div>
+            
+            <div class="example-item">
+                <div class="example-url">https://contact-page.com</div>
+                <div class="example-target">email addresses, phone numbers, contact forms</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('selectorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            
+            // Get form data
+            const formData = new FormData(e.target);
+            const data = {
+                url: formData.get('url'),
+                targetInfo: formData.get('targetInfo'),
+                options: {}
+            };
+
+            // Parse options if provided
+            const optionsText = formData.get('options');
+            if (optionsText) {
+                try {
+                    // Simple parsing for waitForSelector
+                    if (optionsText.includes('waitForSelector:')) {
+                        const match = optionsText.match(/waitForSelector:\s*['"]([^'"]+)['"]/);
+                        if (match) {
+                            data.options.waitForSelector = match[1];
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error parsing options:', error);
+                }
+            }
+
+            // Show loading
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+            results.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/find-selectors', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayResults(result);
+                } else {
+                    displayError(result.error);
+                }
+            } catch (error) {
+                displayError('Failed to connect to the server. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+
+        function displayResults(result) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
+                <div class="success">
+                    <i class="fas fa-check-circle"></i> Successfully analyzed: ${result.url}
+                    ${result.metadata ? `<br><small>Processing time: ${result.metadata.processingTime}ms | Found ${result.metadata.totalSelectorsFound} selectors</small>` : ''}
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-title">
+                        <i class="fas fa-crosshairs"></i> Best Selector Found
+                    </div>
+                    <div class="selector-item">
+                        <div class="selector-code">${result.selectors.primary.selector}</div>
+                        <div>
+                            <span class="confidence-badge confidence-${getConfidenceClass(result.selectors.confidence)}">
+                                ${Math.round(result.selectors.confidence * 100)}% confidence
+                            </span>
+                            ${result.selectors.primary.elementCount ? `<span class="confidence-badge confidence-medium">${result.selectors.primary.elementCount} elements found</span>` : ''}
+                        </div>
+                        <p><strong>Reasoning:</strong> ${result.selectors.reasoning}</p>
+                        ${result.selectors.primary.sampleText ? `<p><strong>Sample:</strong> "${result.selectors.primary.sampleText}"</p>` : ''}
+                    </div>
+                </div>
+            `;
+
+            if (result.selectors.alternatives && result.selectors.alternatives.length > 0) {
+                html += `
+                    <div class="result-card">
+                        <div class="result-title">
+                            <i class="fas fa-list"></i> Alternative Selectors (${result.selectors.alternatives.length})
+                        </div>
+                `;
+                
+                result.selectors.alternatives.forEach((alt, index) => {
+                    html += `
+                        <div class="selector-item">
+                            <div class="selector-code">${alt.selector}</div>
+                            <div>
+                                <span class="confidence-badge confidence-${getConfidenceClass(alt.confidence)}">
+                                    ${Math.round(alt.confidence * 100)}% confidence
+                                </span>
+                                ${alt.elementCount ? `<span class="confidence-badge confidence-medium">${alt.elementCount} elements</span>` : ''}
+                            </div>
+                            <p><strong>Reasoning:</strong> ${alt.reasoning}</p>
+                            ${alt.sampleText ? `<p><strong>Sample:</strong> "${alt.sampleText}"</p>` : ''}
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            }
+
+            if (result.analysis) {
+                html += `
+                    <div class="result-card">
+                        <div class="result-title">
+                            <i class="fas fa-info-circle"></i> Page Analysis
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div><strong>Title:</strong> ${result.analysis.title || 'N/A'}</div>
+                            <div><strong>Content Areas:</strong> ${result.analysis.contentAreas || 0} found</div>
+                            <div><strong>Forms:</strong> ${result.analysis.forms || 0} found</div>
+                            <div><strong>Tables:</strong> ${result.analysis.tables || 0} found</div>
+                            <div><strong>Images:</strong> ${result.analysis.images || 0} found</div>
+                            <div><strong>Links:</strong> ${result.analysis.links || 0} found</div>
+                            <div><strong>Buttons:</strong> ${result.analysis.buttons || 0} found</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Add usage tips
+            html += `
+                <div class="result-card">
+                    <div class="result-title">
+                        <i class="fas fa-lightbulb"></i> Usage Tips
+                    </div>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li>Test the selectors in your browser's developer tools</li>
+                        <li>Higher confidence selectors are more reliable</li>
+                        <li>Use the sample text to verify you're targeting the right elements</li>
+                        <li>Consider using multiple selectors for better reliability</li>
+                    </ul>
+                </div>
+            `;
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function displayError(message, suggestions = []) {
+            const resultsDiv = document.getElementById('results');
+            let html = `
+                <div class="error">
+                    <i class="fas fa-exclamation-triangle"></i> ${message}
+                </div>
+            `;
+            
+            if (suggestions && suggestions.length > 0) {
+                html += `
+                    <div class="result-card">
+                        <div class="result-title">
+                            <i class="fas fa-lightbulb"></i> Suggestions
+                        </div>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            ${suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function getConfidenceClass(confidence) {
+            if (confidence >= 0.8) return 'high';
+            if (confidence >= 0.6) return 'medium';
+            return 'low';
+        }
+    </script>
+</body>
+</html> 

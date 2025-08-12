@@ -1,7 +1,7 @@
 {
   "scraper_config": {
-    "name": "disco",
-    "website_url": "https://www.disco.com.ar/repuesto-de-aromatizador-automatico-lavanda-vainilla-175-cc-glade/p",
+    "name": "Jumbo",
+    "website_url": "https://www.jumbo.cl/aceite-de-oliva-la-espanola-200-ml-extra-virgen-spray/p",
     "schema": {
       "name": {
         "type": "str",
@@ -46,3 +46,5 @@
     }
   }
 } 
+
+
