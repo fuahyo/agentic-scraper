@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic Scraper - AI-Powered Selector Finder</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .selector-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .selector-code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .confidence-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .confidence-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .confidence-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .examples {
+            background: #e3f2fd;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .examples h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        .example-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 3px solid #1976d2;
+        }
+
+        .example-url {
+            font-weight: 600;
+            color: #1976d2;
+        }
+
+        .example-target {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-robot"></i> Enhanced Agentic Scraper</h1>
+            <p>AI-Powered + Visual Selector Tool for Web Scraping</p>
+        </div>
+
+        <div class="main-card">
+            <form id="selectorForm">
+                <div class="form-group">
+                    <label for="url">
+                        <i class="fas fa-link"></i> Website URL
+                    </label>
+                    <input 
+                        type="url" 
+                        id="url" 
+                        name="url" 
+                        placeholder="https://example.com"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="modeToggle">
+                        <i class="fas fa-toggle-on"></i> Mode
+                    </label>
+                    <select id="modeToggle" name="modeToggle" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e1e5e9;">
+                        <option value="single" selected>Single Field</option>
+                        <option value="schema">Schema (Multiple Fields)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="singleFieldGroup">
+                    <label for="targetInfo">
+                        <i class="fas fa-search"></i> What information are you looking for?
+                    </label>
+                    <textarea 
+                        id="targetInfo" 
+                        name="targetInfo" 
+                        placeholder="Describe the information you want to extract. For example: 'product price', 'article title', 'contact email', 'product images', etc."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group" id="schemaGroup" style="display:none;">
+                    <label for="schemaJson">
+                        <i class="fas fa-diagram-project"></i> Schema (JSON)
+                    </label>
+                    <textarea id="schemaJson" name="schemaJson" placeholder='{
+  "title": { "type": "text", "description": "product title" },
+  "price": { "type": "price", "description": "product price" }
+}' style="min-height: 140px;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="options">
+                        <i class="fas fa-cog"></i> Additional Options (Optional)
+                    </label>
+                    <input 
+                        type="text" 
+                        id="options" 
+                        name="options" 
+                        placeholder="waitForSelector: '.dynamic-content' (for pages with dynamic content)"
+                    >
+                </div>
+
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="submit" class="submit-btn" id="submitBtn" style="flex: 2; min-width: 200px;">
+                        <i class="fas fa-magic"></i> AI Analysis
+                    </button>
+                    <button type="button" class="submit-btn" id="visualBtn" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);">
+                        <i class="fas fa-crosshairs"></i> Visual Selector
+                </button>
+                </div>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>AI is analyzing the webpage and finding the best selectors...</p>
+            </div>
+        </div>
+
+        <div class="results" id="results"></div>
+
+        <div class="examples">
+            <h3><i class="fas fa-lightbulb"></i> How to Use the Enhanced Scraper</h3>
+            
+            <div class="example-item" style="background: #e8f5e8; border-left: 3px solid #28a745;">
+                <div style="font-weight: 600; color: #28a745; margin-bottom: 8px;">
+                    <i class="fas fa-robot"></i> AI Analysis Mode (Recommended First)
+                </div>
+                <div style="color: #666; font-size: 14px;">
+                    Start with AI analysis for quick, automated selector discovery. If confidence is low, the tool will recommend visual inspection.
+                </div>
+            </div>
+            
+            <div class="example-item" style="background: #ffe8e8; border-left: 3px solid #ff6b6b;">
+                <div style="font-weight: 600; color: #ff6b6b; margin-bottom: 8px;">
+                    <i class="fas fa-crosshairs"></i> Visual Selector Mode (High Accuracy)
+                </div>
+                <div style="color: #666; font-size: 14px;">
+                    Open a browser window and visually click on the exact element you want to scrape. Perfect for complex or dynamic websites.
+                </div>
+            </div>
+            
+            <div class="example-item">
+                <div class="example-url">https://amazon.com/product-page</div>
+                <div class="example-target">product price, product title, product images</div>
+            </div>
+            
+            <div class="example-item">
+                <div class="example-url">https://news-website.com/article</div>
+                <div class="example-target">article title, article content, publication date</div>
+            </div>
+            
+            <div class="example-item">
+                <div class="example-url">https://ecommerce-site.com/category</div>
+                <div class="example-target">product names, prices, ratings, "add to cart" buttons</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'ai'; // 'ai' or 'visual'
+        let visualInspectionSession = null;
+
+        document.getElementById('modeToggle').addEventListener('change', (e) => {
+            const mode = e.target.value;
+            document.getElementById('singleFieldGroup').style.display = mode === 'single' ? 'block' : 'none';
+            document.getElementById('schemaGroup').style.display = mode === 'schema' ? 'block' : 'none';
+        });
+
+        document.getElementById('selectorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('Form submitted!');
+            
+            // Basic validation
+            const url = document.getElementById('url').value;
+            const mode = document.getElementById('modeToggle').value;
+            
+            if (!url) {
+                displayError('Please enter a URL');
+                return;
+            }
+            
+            if (mode === 'single') {
+                const targetInfo = document.getElementById('targetInfo').value;
+                if (!targetInfo) {
+                    displayError('Please enter target information');
+                    return;
+                }
+            } else if (mode === 'schema') {
+                const schemaText = document.getElementById('schemaJson').value;
+                if (!schemaText) {
+                    displayError('Please enter schema JSON');
+                    return;
+                }
+            }
+            
+            console.log('Validation passed, running analysis...');
+            if (mode === 'schema') {
+                await runSchemaAnalysis();
+            } else {
+                await runAIAnalysis();
+            }
+        });
+
+        document.getElementById('visualBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await startVisualInspection();
+        });
+
+        async function runAIAnalysis() {
+            console.log('runAIAnalysis started');
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            
+            // Get form data
+            const formData = new FormData(document.getElementById('selectorForm'));
+            const data = {
+                url: formData.get('url'),
+                targetInfo: formData.get('targetInfo'),
+                options: {},
+                useVisualIfNeeded: true
+            };
+            
+            console.log('Form data:', data);
+
+            // Parse options if provided
+            const optionsText = formData.get('options');
+            if (optionsText) {
+                try {
+                    // Simple parsing for waitForSelector
+                    if (optionsText.includes('waitForSelector:')) {
+                        const match = optionsText.match(/waitForSelector:\s*['"]([^'"]+)['"]/);
+                        if (match) {
+                            data.options.waitForSelector = match[1];
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error parsing options:', error);
+                }
+            }
+
+            // Show loading
+            submitBtn.disabled = true;
+            document.getElementById('visualBtn').disabled = true;
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            updateLoadingMessage('AI is analyzing the webpage and finding the best selectors...');
+
+            try {
+                console.log('Making API request to /api/find-selectors-enhanced');
+                const response = await fetch('/api/find-selectors-enhanced', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('Response data:', result);
+
+                if (result.success) {
+                    displayEnhancedResults(result);
+                } else {
+                    displayError(result.error, result.suggestions);
+                }
+            } catch (error) {
+                displayError('Failed to connect to the server. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                document.getElementById('visualBtn').disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        async function runSchemaAnalysis() {
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+
+            const formData = new FormData(document.getElementById('selectorForm'));
+            const url = formData.get('url');
+            const schemaText = formData.get('schemaJson');
+            const options = {};
+
+            let schema;
+            try {
+                schema = JSON.parse(schemaText);
+            } catch (e) {
+                displayError('Invalid schema JSON');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            document.getElementById('visualBtn').disabled = true;
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            updateLoadingMessage('AI is analyzing the webpage and finding selectors for your schema...');
+
+            try {
+                const response = await fetch('/api/find-selectors-schema', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url, schema, options })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    displaySchemaResults(data);
+                } else {
+                    displayError(data.error || 'Schema analysis failed');
+                }
+            } catch (e) {
+                displayError('Failed to connect to the server. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                document.getElementById('visualBtn').disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        async function startVisualInspection() {
+            const visualBtn = document.getElementById('visualBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            
+            const formData = new FormData(document.getElementById('selectorForm'));
+            const url = formData.get('url');
+            const targetInfo = formData.get('targetInfo');
+
+            if (!url || !targetInfo) {
+                displayError('Please fill in URL and target information before starting visual inspection.');
+                return;
+            }
+
+            // Show loading
+            visualBtn.disabled = true;
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            updateLoadingMessage('Starting visual inspection... Browser will open shortly...');
+
+            try {
+                // Start visual inspection
+                const response = await fetch('/api/start-visual-inspection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        url: url,
+                        schema: { [targetInfo]: { type: 'text', description: targetInfo } }
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    visualInspectionSession = result.sessionId;
+                    await showVisualInspectionUI(targetInfo);
+                } else {
+                    displayError(result.error || 'Failed to start visual inspection');
+                }
+            } catch (error) {
+                displayError('Failed to start visual inspection: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        async function showVisualInspectionUI(targetInfo) {
+            const results = document.getElementById('results');
+            
+            results.innerHTML = `
+                <div class="result-card" style="border-left: 5px solid #ff6b6b;">
+                    <div class="result-title">
+                        <i class="fas fa-crosshairs"></i> Visual Selector Tool Active
+                    </div>
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: #856404;">
+                            <i class="fas fa-info-circle"></i> Instructions:
+                        </h4>
+                        <ol style="margin: 0; padding-left: 20px; color: #856404;">
+                            <li>Look for the browser window that opened with your webpage</li>
+                            <li>Move your mouse over elements to highlight them</li>
+                            <li>Click on the element containing: <strong>"${targetInfo}"</strong></li>
+                            <li>The tool will automatically process your selection</li>
+                            <li>Press ESC to cancel selection</li>
+                        </ol>
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="selectElementForField('${targetInfo}')" class="submit-btn" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                            <i class="fas fa-hand-pointer"></i> Start Selection
+                        </button>
+                        <button onclick="stopVisualInspection()" class="submit-btn" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                            <i class="fas fa-stop"></i> Stop & Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            results.style.display = 'block';
+            document.getElementById('visualBtn').disabled = false;
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        async function selectElementForField(fieldName) {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            updateLoadingMessage('Waiting for element selection in browser... Click on the target element.');
+
+            try {
+                const response = await fetch('/api/select-element', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        fieldName: fieldName,
+                        fieldDescription: fieldName
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayVisualResult(result);
+                } else if (result.cancelled) {
+                    displayInfo('Element selection was cancelled. You can try again or stop the visual inspection.');
+                } else if (result.timeout) {
+                    displayError('Selection timeout. Please try again or stop the visual inspection.');
+                } else {
+                    displayError(result.message || 'Failed to select element');
+                }
+            } catch (error) {
+                displayError('Error during element selection: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        async function stopVisualInspection() {
+            try {
+                await fetch('/api/stop-visual-inspection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                document.getElementById('results').style.display = 'none';
+                document.getElementById('visualBtn').disabled = false;
+                document.getElementById('submitBtn').disabled = false;
+                visualInspectionSession = null;
+                
+                displayInfo('Visual inspection stopped. Browser window closed.');
+            } catch (error) {
+                console.error('Error stopping visual inspection:', error);
+            }
+        }
+
+        function updateLoadingMessage(message) {
+            const loadingElement = document.querySelector('#loading p');
+            if (loadingElement) {
+                loadingElement.textContent = message;
+            }
+        }
+
+        function displayEnhancedResults(result) {
+            const resultsDiv = document.getElementById('results');
+            const aiResult = result.aiResult;
+            
+            let html = `
+                <div class="success">
+                    <i class="fas fa-check-circle"></i> Successfully analyzed: ${result.url}
+                    <br><small>Processing time: ${result.metadata.processingTime}ms | Method: ${result.metadata.method}</small>
+                </div>
+            `;
+
+            // Show AI confidence and quality
+            if (aiResult.confidence < 0.7) {
+                html += `
+                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 15px; margin: 20px 0;">
+                        <h4 style="margin: 0 0 10px 0; color: #856404;">
+                            <i class="fas fa-exclamation-triangle"></i> Low AI Confidence Detected
+                        </h4>
+                        <p style="margin: 0 0 15px 0; color: #856404;">
+                            AI confidence: ${Math.round(aiResult.confidence * 100)}% - Visual inspection recommended for better accuracy.
+                        </p>
+                        <button onclick="startVisualInspection()" class="submit-btn" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); padding: 10px 20px; font-size: 14px;">
+                            <i class="fas fa-crosshairs"></i> Use Visual Selector Tool
+                        </button>
+                </div>
+            `;
+            }
+            
+            // Show primary if available; otherwise show first alternative to avoid empty UI
+            const primary = aiResult.selectors.primary || (aiResult.selectors.alternatives && aiResult.selectors.alternatives[0]);
+            if (primary) {
+                html += `
+                    <div class="result-card">
+                        <div class="result-title">
+                            <i class="fas fa-crosshairs"></i> ${aiResult.selectors.primary ? 'Best AI Selector Found' : 'Candidate Selector'}
+                        </div>
+                        <div class="selector-item">
+                            <div class="selector-code">${primary.selector}</div>
+                            <div>
+                                <span class="confidence-badge confidence-${getConfidenceClass(aiResult.confidence)}">
+                                    ${Math.round(aiResult.confidence * 100)}% confidence
+                                </span>
+                                ${primary.elementCount ? `<span class="confidence-badge confidence-medium">${primary.elementCount} elements found</span>` : ''}
+                            </div>
+                            <p><strong>Reasoning:</strong> ${aiResult.selectors.reasoning}</p>
+                            ${primary.sampleText ? `<p><strong>Sample:</strong> "${primary.sampleText}"</p>` : ''}
+                        </div>
+                        </div>
+                `;
+                
+                if (aiResult.selectors.alternatives && aiResult.selectors.alternatives.length > 0) {
+                    html += `
+                        <div class="result-card">
+                            <div class="result-title">
+                                <i class="fas fa-list"></i> Alternative AI Selectors (${aiResult.selectors.alternatives.length})
+                            </div>
+                    `;
+                    
+                    aiResult.selectors.alternatives.forEach((alt, index) => {
+                    html += `
+                            <div class="selector-item">
+                                <div class="selector-code">${alt.selector}</div>
+                            <div>
+                                <span class="confidence-badge confidence-${getConfidenceClass(alt.confidence)}">
+                                    ${Math.round(alt.confidence * 100)}% confidence
+                                </span>
+                                ${alt.elementCount ? `<span class="confidence-badge confidence-medium">${alt.elementCount} elements</span>` : ''}
+                            </div>
+                            <p><strong>Reasoning:</strong> ${alt.reasoning}</p>
+                            ${alt.sampleText ? `<p><strong>Sample:</strong> "${alt.sampleText}"</p>` : ''}
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                }
+            }
+
+            // Show suggestions if available
+            if (aiResult.selectors.suggestions && aiResult.selectors.suggestions.length > 0) {
+                html += `
+                    <div class="result-card">
+                        <div class="result-title">
+                            <i class="fas fa-lightbulb"></i> AI Suggestions
+                        </div>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            ${aiResult.selectors.suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            if (result.analysis) {
+                html += `
+                    <div class="result-card">
+                        <div class="result-title">
+                            <i class="fas fa-info-circle"></i> Page Analysis
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div><strong>Title:</strong> ${result.analysis.title || 'N/A'}</div>
+                            <div><strong>Content Areas:</strong> ${result.analysis.contentAreas || 0} found</div>
+                            <div><strong>Forms:</strong> ${result.analysis.forms || 0} found</div>
+                            <div><strong>Tables:</strong> ${result.analysis.tables || 0} found</div>
+                            <div><strong>Images:</strong> ${result.analysis.images || 0} found</div>
+                            <div><strong>Links:</strong> ${result.analysis.links || 0} found</div>
+                            <div><strong>Buttons:</strong> ${result.analysis.buttons || 0} found</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function displaySchemaResults(result) {
+            const resultsDiv = document.getElementById('results');
+            let html = `
+                <div class="success">
+                    <i class="fas fa-check-circle"></i> Successfully analyzed: ${result.url}
+                    <br><small>Detected page type: ${result.pageType || 'generic'}</small>
+                </div>
+            `;
+
+            html += `<div class="result-card"><div class="result-title"><i class="fas fa-list"></i> Field Results</div>`;
+            for (const [field, res] of Object.entries(result.fields || {})) {
+                if (!res || res.error) {
+                    html += `<div class="selector-item"><strong>${field}:</strong> <span class="error">${res?.error || 'No selector found'}</span></div>`;
+                    continue;
+                }
+                const primary = res.primary || res.selectors?.primary || res.alternatives?.[0];
+                html += `
+                    <div class="selector-item">
+                        <div><strong>${field}</strong></div>
+                        ${primary ? `<div class="selector-code">${primary.selector}</div>` : '<div>No primary selector</div>'}
+                        ${primary?.sampleText ? `<div><small>Sample: "${primary.sampleText}"</small></div>` : ''}
+                        <div>
+                            <span class="confidence-badge confidence-${getConfidenceClass(res.confidence || 0.5)}">${Math.round((res.confidence || 0.5) * 100)}% confidence</span>
+                        </div>
+                    </div>
+                `;
+            }
+            html += `</div>`;
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function displayVisualResult(result) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
+                <div class="success">
+                    <i class="fas fa-check-circle"></i> Visual selection completed successfully!
+                </div>
+                
+                <div class="result-card" style="border-left: 5px solid #28a745;">
+                    <div class="result-title">
+                        <i class="fas fa-crosshairs"></i> Visually Selected Element
+                    </div>
+                    <div class="selector-item">
+                        <div class="selector-code">${result.selector}</div>
+                        <div>
+                            <span class="confidence-badge confidence-high">
+                                Visual Selection ✅
+                            </span>
+                            <span class="confidence-badge confidence-medium">
+                                ${result.elementData.tagName} element
+                            </span>
+                        </div>
+                        <p><strong>Field:</strong> ${result.field}</p>
+                        <p><strong>Element:</strong> ${result.elementData.tagName}</p>
+                        ${result.elementData.textContent ? `<p><strong>Text:</strong> "${result.elementData.textContent.substring(0, 100)}${result.elementData.textContent.length > 100 ? '...' : ''}"</p>` : ''}
+                        ${result.elementData.id ? `<p><strong>ID:</strong> ${result.elementData.id}</p>` : ''}
+                        ${result.elementData.className ? `<p><strong>Classes:</strong> ${result.elementData.className}</p>` : ''}
+                    </div>
+                </div>
+            `;
+
+            if (result.selectors && result.selectors.length > 1) {
+                html += `
+                    <div class="result-card">
+                        <div class="result-title">
+                            <i class="fas fa-list"></i> Alternative Selectors Generated (${result.selectors.length - 1})
+                        </div>
+                `;
+                
+                result.selectors.slice(1).forEach((selector, index) => {
+                    html += `
+                        <div class="selector-item">
+                            <div class="selector-code">${selector}</div>
+                            <div>
+                                <span class="confidence-badge confidence-medium">
+                                    Alternative ${index + 1}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            }
+
+            html += `
+                <div class="result-card">
+                    <div class="result-title">
+                        <i class="fas fa-lightbulb"></i> Next Steps
+                    </div>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li>Test the selector in your browser's developer tools</li>
+                        <li>Copy the selector code for use in your scraping script</li>
+                        <li>Visual selection provides high accuracy for the specific element chosen</li>
+                        <li>You can select additional elements or stop the visual inspection</li>
+                    </ul>
+                    <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="selectElementForField('${result.field}')" class="submit-btn" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); padding: 10px 15px; font-size: 14px;">
+                            <i class="fas fa-hand-pointer"></i> Select Another Element
+                        </button>
+                        <button onclick="stopVisualInspection()" class="submit-btn" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); padding: 10px 15px; font-size: 14px;">
+                            <i class="fas fa-stop"></i> Stop & Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function displayInfo(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div style="background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                    <i class="fas fa-info-circle"></i> ${message}
+                </div>
+            `;
+            resultsDiv.style.display = 'block';
+        }
+
+        function displayResults(result) {
+            // Fallback for basic results (backwards compatibility)
+            displayEnhancedResults({
+                success: true,
+                url: result.url,
+                aiResult: {
+                    selectors: result.selectors,
+                    confidence: result.selectors.confidence || 0.5
+                },
+                analysis: result.analysis,
+                metadata: result.metadata || {}
+            });
+        }
+
+        function displayError(message, suggestions = []) {
+            const resultsDiv = document.getElementById('results');
+            let html = `
+                <div class="error">
+                    <i class="fas fa-exclamation-triangle"></i> ${message}
+                </div>
+            `;
+            
+            if (suggestions && suggestions.length > 0) {
+                html += `
+                    <div class="result-card">
+                        <div class="result-title">
+                            <i class="fas fa-lightbulb"></i> Suggestions
+                        </div>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            ${suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function getConfidenceClass(confidence) {
+            if (confidence >= 0.8) return 'high';
+            if (confidence >= 0.6) return 'medium';
+            return 'low';
+        }
+    </script>
+</body>
+</html> 
